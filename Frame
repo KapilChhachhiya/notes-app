@@ -12,38 +12,7 @@ public class NoteApp extends JFrame {
     static final String DB_URL = "jdbc:sqlite:notes.db";
 
     // GUI components
-    private JTextArea noteTextArea;
-    private JButton saveButton;
-    private JButton deleteButton;
-
-    public static void main(String[] args) {
-        NoteApp app = new NoteApp();
-        app.setVisible(true);
-    }
-
-    public NoteApp() {
-        // set up the GUI components
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Note App");
-        setBounds(100, 100, 400, 300);
-        JPanel contentPane = new JPanel(new BorderLayout());
-
-        noteTextArea = new JTextArea();
-        noteTextArea.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(noteTextArea);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        saveButton = new JButton("Save");
-        saveButton.addActionListener(new SaveButtonListener());
-        buttonPanel.add(saveButton);
-
-        deleteButton = new JButton("Delete");
-        deleteButton.addActionListener(new DeleteButtonListener());
-        buttonPanel.add(deleteButton);
-
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
-        setContentPane(contentPane);
+    priva
 
         // create the database table if it doesn't already exist
         Connection conn = null;
