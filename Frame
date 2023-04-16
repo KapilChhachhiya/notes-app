@@ -1,88 +1,35 @@
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
-public class NoteApp extends JFrame {
-    // database connection variables
-    static final String JDBC_DRIVER = "org.sqlite.JDBC";
-    static final String DB_URL = "jdbc:sqlite:notes.db";
-
     // GUI components
-    priva
+    private JTextArea noteTextArea;
+    private JButton saveButton;
+    private JButton deleteButton;
 
-        // create the database table if it doesn't already exist
-        Connection conn = null;
-        try {
-            Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL);
-            Statement stmt = conn.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS notes " +
-                         "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                         " content TEXT, " +
-                         " date_created TEXT)";
-            stmt.executeUpdate(sql);
-            stmt.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // display the notes from the database
-        displayNotes();
+    public static void main(String[] args) {
+        NoteApp app = new NoteApp();
+        app.setVisible(true);
     }
 
-    private void displayNotes() {
-        Connection conn = null;
-        try {
-            Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL);
-            PreparedStatement pstmt = conn.prepareStatement("SELECT content FROM notes ORDER BY date_created DESC");
-            ResultSet rs = pstmt.executeQuery();
-            StringBuilder sb = new StringBuilder();
-            while (rs.next()) {
-                sb.append(rs.getString("content"));
-                sb.append("\n");
-            }
-            noteTextArea.setText(sb.toString());
-            rs.close();
-            pstmt.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    public NoteApp() {
+        // set up the GUI components
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Note App");
+        setBounds(100, 100, 400, 300);
+        JPanel contentPane = new JPanel(new BorderLayout());
 
-    private class SaveButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            // save the note to the database
-            String note = noteTextArea.getText().trim();
-            if (!note.isEmpty()) {
-                Connection conn = null;
-                try {
-                    Class.forName(JDBC_DRIVER);
-                    conn = DriverManager.getConnection(DB_URL);
-                    PreparedStatement pstmt = conn.prepareStatement("INSERT INTO notes (content, date_created) VALUES (?, ?)");
-                    pstmt.setString(1, note);
-                    pstmt.setString(2, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                    pstmt.executeUpdate();
-                    pstmt.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        if (conn != null) conn.close();
-                    }
+        noteTextArea = new JTextArea();
+        noteTextArea.setLineWrap(true);
+        JScrollPane scrollPane = new JScrollPane(noteTextArea);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        saveButton = new JButton("Save");
+        saveButton.addActionListener(new SaveButtonListener());
+        buttonPanel.add(saveButton);
+
+        deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(new DeleteButtonListener());
+        buttonPanel.add(deleteButton);
+
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+        setContentPane(contentPane);
+
+        
